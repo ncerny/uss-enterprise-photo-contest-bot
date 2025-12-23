@@ -1,0 +1,1 @@
+export const SUBMISSION_CAPTION_MAX_LENGTH = 500;

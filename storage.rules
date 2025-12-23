@@ -1,0 +1,26 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Submission images: /submissions/{contestId}/{uploadId}/{variant}
+    // Bot uses Admin SDK (bypasses rules), Web uses client SDK
+    // Path: submissions/{contestId}/{uploadId}/archive|display|thumbnail.ext
+    match /submissions/{contestId}/{uploadId}/{filename} {
+      // Anyone can read (for displaying submissions during voting/results)
+      allow read: if true;
+
+      // Authenticated users can upload new images
+      // Note: Ownership is enforced at Firestore level (submission.userId)
+      // Orphaned files are cleaned up by scheduled Cloud Function
+      allow write: if request.auth != null;
+
+      // Authenticated users can delete images
+      // This is needed for image replacement flow
+      allow delete: if request.auth != null;
+    }
+
+    // Deny all other paths by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

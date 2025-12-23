@@ -1,0 +1,18 @@
+[Unit]
+Description=USS Enterprise Photo Contest Bot
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=/opt/enterprise-bot/.env
+WorkingDirectory=/opt/enterprise-bot/app/bot
+ExecStart=/usr/bin/npm run start --workspace=bot
+Restart=on-failure
+RestartSec=5s
+User=enterprise
+Group=enterprise
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
