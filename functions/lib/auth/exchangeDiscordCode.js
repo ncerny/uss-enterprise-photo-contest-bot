@@ -5,10 +5,11 @@ const https_1 = require("firebase-functions/v2/https");
 const auth_1 = require("firebase-admin/auth");
 const params_1 = require("firebase-functions/params");
 const v2_1 = require("firebase-functions/v2");
-// Define parameters (set via Firebase CLI or console)
+// Define parameters - these read from functions/.env file
 const discordClientId = (0, params_1.defineString)('DISCORD_CLIENT_ID');
-const discordClientSecret = (0, params_1.defineString)('DISCORD_CLIENT_SECRET');
 const allowedRedirectUris = (0, params_1.defineString)('ALLOWED_REDIRECT_URIS');
+// Secret - stored in Google Cloud Secret Manager
+const discordClientSecret = (0, params_1.defineSecret)('DISCORD_CLIENT_SECRET');
 const DISCORD_API_BASE = 'https://discord.com/api/v10';
 const DISCORD_TOKEN_URL = `${DISCORD_API_BASE}/oauth2/token`;
 const DISCORD_USER_URL = `${DISCORD_API_BASE}/users/@me`;
@@ -147,6 +148,8 @@ exports.exchangeDiscordCode = (0, https_1.onCall)({
     // Memory and timeout settings
     memory: '256MiB',
     timeoutSeconds: 30,
+    // Make secret available at runtime
+    secrets: [discordClientSecret],
 }, async (request) => {
     const { code, redirectUri } = request.data;
     // Validate code input
