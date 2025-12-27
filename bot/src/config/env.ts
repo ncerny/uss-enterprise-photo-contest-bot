@@ -39,7 +39,7 @@ export const env: EnvConfig = {
   NODE_ENV: process.env.NODE_ENV ?? 'development',
   LOG_LEVEL: process.env.LOG_LEVEL ?? 'info',
   FIREBASE_STORAGE_BUCKET:
-    process.env.FIREBASE_STORAGE_BUCKET ?? `${FIREBASE_PROJECT_ID}.appspot.com`,
+    process.env.FIREBASE_STORAGE_BUCKET ?? `${FIREBASE_PROJECT_ID}.firebasestorage.app`,
   DISCORD_ERROR_CHANNEL_ID: process.env.DISCORD_ERROR_CHANNEL_ID,
   WEB_APP_URL: process.env.WEB_APP_URL,
 };
