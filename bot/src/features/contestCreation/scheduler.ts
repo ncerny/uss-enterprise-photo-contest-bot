@@ -5,6 +5,7 @@ import { ContestRepository, SubmissionRepository } from '../../repositories';
 import { getFirestoreClient } from '../../config/firebaseAdmin';
 import { transitionContest } from './stateMachine';
 import { VotingGalleryService } from '../voting/votingGalleryService';
+import { ResultsService } from '../results';
 
 export type VotingMessageRegistrar = (
   messageId: string,
@@ -20,6 +21,7 @@ export class ContestScheduler {
   private readonly contestRepository = new ContestRepository(getFirestoreClient());
   private readonly submissionRepository = new SubmissionRepository(getFirestoreClient());
   private readonly votingGalleryService = new VotingGalleryService();
+  private readonly resultsService = new ResultsService();
   private timer?: NodeJS.Timeout;
   private running = false;
   private tickInFlight = false;
@@ -177,6 +179,11 @@ export class ContestScheduler {
         await this.postVotingGallery(contest, channel);
       }
 
+      // Announce results when transitioning to RESULTS status
+      if (targetStatus === ContestStatus.RESULTS) {
+        await this.announceResults(contest, channel);
+      }
+
       logger.info(`ContestScheduler transitioned contest ${contest.id} to ${targetStatus}.`);
     } catch (error) {
       logger.error(
@@ -203,6 +210,22 @@ export class ContestScheduler {
       });
     } catch (error) {
       logger.error('Failed to post voting gallery', error as Error, {
+        contestId: contest.id,
+      });
+    }
+  }
+
+  private async announceResults(contest: Contest, channel: TextChannel): Promise<void> {
+    try {
+      const results = await this.resultsService.announceResults(contest, channel);
+
+      logger.info('Results announced', {
+        contestId: contest.id,
+        winnersCount: results.rankings.filter((r) => r.placement <= contest.numberOfWinners).length,
+        totalVotes: results.statistics.totalVotes,
+      });
+    } catch (error) {
+      logger.error('Failed to announce results', error as Error, {
         contestId: contest.id,
       });
     }
@@ -282,9 +305,9 @@ export class ContestScheduler {
   private buildAnnouncement(targetStatus: ContestStatus): string {
     switch (targetStatus) {
       case ContestStatus.VOTING:
-        return '⏱️ Submissions closed automatically. Voting begins now!';
+        return ':alarm_clock: Submissions closed automatically. Voting begins now!';
       case ContestStatus.RESULTS:
-        return '✅ Voting closed automatically. Results will be announced shortly!';
+        return ':white_check_mark: Voting has ended!';
       default:
         return 'Contest status updated automatically.';
     }
