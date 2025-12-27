@@ -1,4 +1,5 @@
 import { useAuth } from '../contexts/AuthContext';
+import { ThemeToggle } from './ThemeToggle';
 import styles from './Layout.module.css';
 
 interface LayoutProps {
@@ -13,19 +14,22 @@ export default function Layout({ children }: LayoutProps) {
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <h1 className={styles.logo}>USS Enterprise Photo Contest</h1>
-          {user && (
-            <div className={styles.userMenu}>
-              <img
-                src={user.avatarUrl}
-                alt={user.username}
-                className={styles.avatar}
-              />
-              <span className={styles.username}>{user.username}</span>
-              <button onClick={logout} className="btn-secondary">
-                Logout
-              </button>
-            </div>
-          )}
+          <div className={styles.userMenu}>
+            <ThemeToggle />
+            {user && (
+              <>
+                <img
+                  src={user.avatarUrl}
+                  alt={user.username}
+                  className={styles.avatar}
+                />
+                <span className={styles.username}>{user.username}</span>
+                <button onClick={logout} className="btn-secondary">
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </header>
       <main className={styles.main}>
