@@ -4,6 +4,13 @@ import { logger } from '../../logger';
 import { ContestRepository } from '../../repositories';
 import { getFirestoreClient } from '../../config/firebaseAdmin';
 import { transitionContest } from './stateMachine';
+import { VotingGalleryService } from '../voting/votingGalleryService';
+
+export type VotingMessageRegistrar = (
+  messageId: string,
+  submissionId: string,
+  contestId: string
+) => void;
 
 const DEFAULT_INTERVAL_MS = 60_000;
 const SYSTEM_ACTOR_ID = 'contest-scheduler';
@@ -11,14 +18,23 @@ const ORPHAN_GRACE_PERIOD_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export class ContestScheduler {
   private readonly contestRepository = new ContestRepository(getFirestoreClient());
+  private readonly votingGalleryService = new VotingGalleryService();
   private timer?: NodeJS.Timeout;
   private running = false;
   private tickInFlight = false;
+  private votingMessageRegistrar?: VotingMessageRegistrar;
 
   constructor(
     private readonly client: Client,
     private readonly intervalMs = DEFAULT_INTERVAL_MS
   ) {}
+
+  /**
+   * Set the registrar for voting messages (called by VotingReactionHandler)
+   */
+  setVotingMessageRegistrar(registrar: VotingMessageRegistrar): void {
+    this.votingMessageRegistrar = registrar;
+  }
 
   start(): void {
     if (this.running) {
@@ -112,12 +128,39 @@ export class ContestScheduler {
         announcement: this.buildAnnouncement(targetStatus),
       });
 
+      // Post voting gallery when transitioning to VOTING status
+      if (targetStatus === ContestStatus.VOTING) {
+        await this.postVotingGallery(contest, channel);
+      }
+
       logger.info(`ContestScheduler transitioned contest ${contest.id} to ${targetStatus}.`);
     } catch (error) {
       logger.error(
         `ContestScheduler failed to transition contest ${contest.id} to ${targetStatus}.`,
         error as Error
       );
+    }
+  }
+
+  private async postVotingGallery(contest: Contest, channel: TextChannel): Promise<void> {
+    try {
+      const result = await this.votingGalleryService.postGallery(contest, channel);
+
+      // Register voting messages with reaction handler
+      if (this.votingMessageRegistrar) {
+        for (const [submissionId, messageId] of result.submissionMessageMap) {
+          this.votingMessageRegistrar(messageId, submissionId, contest.id);
+        }
+      }
+
+      logger.info('Voting gallery posted and messages registered', {
+        contestId: contest.id,
+        submissionCount: result.totalSubmissions,
+      });
+    } catch (error) {
+      logger.error('Failed to post voting gallery', error as Error, {
+        contestId: contest.id,
+      });
     }
   }
 

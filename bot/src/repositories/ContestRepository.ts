@@ -168,6 +168,15 @@ export class ContestRepository {
     return snapshot.docs.map((doc) => this.deserializeContest(doc));
   }
 
+  /**
+   * Find contests by status
+   */
+  async findByStatus(status: ContestStatus): Promise<Contest[]> {
+    const snapshot = await this.collection.where('status', '==', status).get();
+
+    return snapshot.docs.map((doc) => this.deserializeContest(doc));
+  }
+
   private deserializeContest(doc: DocumentSnapshot | QueryDocumentSnapshot): Contest {
     const data = doc.data() as ContestData & {
       createdAt: Date | Timestamp;

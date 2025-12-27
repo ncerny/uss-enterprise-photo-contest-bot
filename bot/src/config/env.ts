@@ -16,6 +16,7 @@ type EnvConfig = Record<RequiredKey, string> & {
   LOG_LEVEL: string;
   FIREBASE_STORAGE_BUCKET: string;
   DISCORD_ERROR_CHANNEL_ID?: string;
+  WEB_APP_URL?: string;
 };
 
 function requireEnv(key: RequiredKey): string {
@@ -40,4 +41,5 @@ export const env: EnvConfig = {
   FIREBASE_STORAGE_BUCKET:
     process.env.FIREBASE_STORAGE_BUCKET ?? `${FIREBASE_PROJECT_ID}.appspot.com`,
   DISCORD_ERROR_CHANNEL_ID: process.env.DISCORD_ERROR_CHANNEL_ID,
+  WEB_APP_URL: process.env.WEB_APP_URL,
 };

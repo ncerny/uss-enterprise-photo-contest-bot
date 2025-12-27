@@ -168,3 +168,25 @@ export const Collections = {
 export type ContestData = Omit<Contest, 'id'>;
 export type SubmissionData = Omit<Submission, 'id'>;
 export type VoteData = Omit<Vote, 'id'>;
+
+/**
+ * Check if vote counts should be visible for a contest.
+ * Vote counts are hidden during voting to prevent bandwagon effects.
+ */
+export function areVoteCountsVisible(contest: Contest): boolean {
+  return contest.status === ContestStatus.RESULTS;
+}
+
+/**
+ * Check if a contest is accepting votes
+ */
+export function isVotingOpen(contest: Contest): boolean {
+  return contest.status === ContestStatus.VOTING;
+}
+
+/**
+ * Check if a contest is accepting submissions
+ */
+export function isSubmissionOpen(contest: Contest): boolean {
+  return contest.status === ContestStatus.SUBMISSION;
+}

@@ -14,14 +14,16 @@ import { SubmissionMessageCleanupService } from './features/submissions/messageC
 import { SubmissionFeedbackService } from './features/submissions/submissionFeedbackService';
 import { SubmissionLimitService } from './features/submissions/submissionLimitService';
 import { SubmissionWelcomeMessageService } from './features/submissions/submissionWelcomeMessageService';
+import { VotingReactionHandler, VoteFeedbackService } from './features/voting';
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessageReactions,
   ],
-  partials: [Partials.Channel, Partials.Message, Partials.GuildMember],
+  partials: [Partials.Channel, Partials.Message, Partials.GuildMember, Partials.Reaction, Partials.User],
 });
 
 errorReporter.setClient(client);
@@ -46,10 +48,20 @@ const submissionWelcomeMessageService = new SubmissionWelcomeMessageService(
   submissionPersistenceService
 );
 
+// Voting services
+const votingReactionHandler = new VotingReactionHandler(client);
+const voteFeedbackService = new VoteFeedbackService(client, votingReactionHandler);
+
+// Wire up voting message registration
+contestScheduler.setVotingMessageRegistrar((messageId, submissionId, contestId) => {
+  votingReactionHandler.registerVotingMessage(messageId, submissionId, contestId);
+});
+
 client.once('ready', () => {
   logger.info(`Bot connected as ${client.user?.tag ?? 'unknown user'}`);
   submissionWatcher.start();
   contestScheduler.start();
+  votingReactionHandler.start();
 });
 
 client.on('interactionCreate', async (interaction) => {
@@ -106,6 +118,8 @@ shutdownSignals.forEach((signal) => {
     logger.info(`Received ${signal}. Shutting down Discord client...`);
 
     try {
+      voteFeedbackService.stop();
+      votingReactionHandler.stop();
       submissionWelcomeMessageService.stop();
       submissionFeedbackService.stop();
       submissionCleanupService.stop();

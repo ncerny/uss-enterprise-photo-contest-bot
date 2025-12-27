@@ -1,6 +1,7 @@
 import { cert, getApps, initializeApp } from 'firebase-admin/app';
 import { Firestore, getFirestore } from 'firebase-admin/firestore';
-import { Bucket, getStorage } from 'firebase-admin/storage';
+import { getStorage } from 'firebase-admin/storage';
+import type { Bucket } from '@google-cloud/storage';
 import { env } from './env';
 
 let firestoreInstance: Firestore | null = null;
