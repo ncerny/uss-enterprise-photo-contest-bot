@@ -19,8 +19,11 @@ export const storage = getStorage(app);
 export const auth = getAuth(app);
 export const functions = getFunctions(app);
 
-// Connect to emulators in development
-if (import.meta.env.DEV) {
+// Connect to emulators when running on localhost (runtime check)
+const isLocalhost = typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+if (isLocalhost) {
   connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
   connectFirestoreEmulator(db, 'localhost', 8080);
   connectStorageEmulator(storage, 'localhost', 9199);

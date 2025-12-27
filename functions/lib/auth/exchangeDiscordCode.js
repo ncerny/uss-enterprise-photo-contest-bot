@@ -45,8 +45,12 @@ function isValidRedirectUri(uri) {
         if (!['http:', 'https:'].includes(redirectUrl.protocol)) {
             return false;
         }
-        const allowed = allowedRedirectUris
-            .value()
+        const allowedRaw = allowedRedirectUris.value();
+        v2_1.logger.info('Redirect URI validation', {
+            received: uri,
+            allowedRaw,
+        });
+        const allowed = allowedRaw
             .split(',')
             .map((u) => u.trim())
             .filter((u) => u.length > 0);

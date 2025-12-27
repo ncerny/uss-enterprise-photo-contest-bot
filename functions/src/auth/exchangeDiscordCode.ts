@@ -83,8 +83,13 @@ function isValidRedirectUri(uri: string): boolean {
       return false;
     }
 
-    const allowed = allowedRedirectUris
-      .value()
+    const allowedRaw = allowedRedirectUris.value();
+    logger.info('Redirect URI validation', {
+      received: uri,
+      allowedRaw,
+    });
+
+    const allowed = allowedRaw
       .split(',')
       .map((u) => u.trim())
       .filter((u) => u.length > 0);
