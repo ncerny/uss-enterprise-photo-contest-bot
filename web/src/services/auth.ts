@@ -1,7 +1,6 @@
 import { signInWithCustomToken, signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { httpsCallable } from 'firebase/functions';
-import { getFunctions } from 'firebase/functions';
-import { auth, app } from '../config/firebase';
+import { auth, functions } from '../config/firebase';
 
 export interface DiscordUser {
   id: string;
@@ -48,7 +47,6 @@ export function getDiscordOAuthUrl(): string {
 }
 
 export async function exchangeCodeForToken(code: string): Promise<AuthUser> {
-  const functions = getFunctions(app);
   const exchangeDiscordCode = httpsCallable<
     { code: string; redirectUri: string },
     { customToken: string; user: DiscordUser }
