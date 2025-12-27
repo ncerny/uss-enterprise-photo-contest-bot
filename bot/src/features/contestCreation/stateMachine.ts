@@ -8,7 +8,8 @@ import { updateContestWelcomeMessage } from './welcomeMessage';
 
 const ALLOWED_TRANSITIONS: Record<ContestStatus, ContestStatus[]> = {
   [ContestStatus.CREATED]: [ContestStatus.SUBMISSION, ContestStatus.CANCELLED],
-  [ContestStatus.SUBMISSION]: [ContestStatus.VOTING, ContestStatus.CANCELLED],
+  // SUBMISSION can go to VOTING normally, or directly to RESULTS if no submissions received
+  [ContestStatus.SUBMISSION]: [ContestStatus.VOTING, ContestStatus.RESULTS, ContestStatus.CANCELLED],
   [ContestStatus.VOTING]: [ContestStatus.RESULTS, ContestStatus.CANCELLED],
   [ContestStatus.RESULTS]: [],
   [ContestStatus.CANCELLED]: [ContestStatus.SUBMISSION],
