@@ -4,10 +4,11 @@
   flex-direction: column;
 }
 
+/* Header */
 .header {
   background-color: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
-  padding: 1rem;
+  padding: 0.75rem 1rem;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -23,19 +24,117 @@
   gap: 1rem;
 }
 
-.logo {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin: 0;
-}
-
-.userMenu {
+.headerLeft {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.logo:hover {
+  text-decoration: none;
+  color: var(--color-primary);
+}
+
+/* Hamburger menu button - mobile only */
+.menuButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.menuIcon {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background-color: var(--color-text);
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.menuIcon::before,
+.menuIcon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-text);
+  transition: transform 0.2s;
+}
+
+.menuIcon::before {
+  top: -6px;
+}
+
+.menuIcon::after {
+  bottom: -6px;
+}
+
+/* Navigation */
+.nav {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.5rem 0;
+  transition: var(--theme-transition);
+}
+
+.navOpen {
+  display: flex;
+}
+
+.navLink {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.navLink:hover {
+  background-color: var(--color-surface-elevated);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.navLinkActive {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.mobileMenuOverlay {
+  position: fixed;
+  inset: 0;
+  top: 60px;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+
+/* User menu */
 .avatar {
   width: 32px;
   height: 32px;
@@ -45,19 +144,93 @@
 .username {
   color: var(--color-text-muted);
   font-size: 0.875rem;
+  display: none;
 }
 
+/* Main content */
 .main {
   flex: 1;
-  padding: 2rem 0;
+  padding: 1.5rem 0;
 }
 
-@media (max-width: 640px) {
-  .logo {
-    font-size: 1rem;
+/* Footer */
+.footer {
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: 1.5rem 1rem;
+  margin-top: auto;
+  transition: var(--theme-transition);
+}
+
+.footerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.copyright {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.footerNav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footerNav a {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.footerNav a:hover {
+  color: var(--color-primary);
+}
+
+/* Tablet and up (768px) */
+@media (min-width: 768px) {
+  .menuButton {
+    display: none;
+  }
+
+  .nav {
+    display: flex;
+    flex-direction: row;
+    position: static;
+    background: transparent;
+    border: none;
+    padding: 0;
+    gap: 0.25rem;
+  }
+
+  .navLink {
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
   }
 
   .username {
-    display: none;
+    display: block;
+  }
+
+  .footerContent {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+}
+
+/* Desktop (1024px) */
+@media (min-width: 1024px) {
+  .logo {
+    font-size: 1.25rem;
+  }
+
+  .main {
+    padding: 2rem 0;
   }
 }
