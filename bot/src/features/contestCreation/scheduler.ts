@@ -1,7 +1,7 @@
 import { ChannelType, Client, DiscordAPIError, TextChannel } from 'discord.js';
 import { Contest, ContestStatus } from '@uss-enterprise/shared';
 import { logger } from '../../logger';
-import { ContestRepository } from '../../repositories';
+import { ContestRepository, SubmissionRepository } from '../../repositories';
 import { getFirestoreClient } from '../../config/firebaseAdmin';
 import { transitionContest } from './stateMachine';
 import { VotingGalleryService } from '../voting/votingGalleryService';
@@ -18,6 +18,7 @@ const ORPHAN_GRACE_PERIOD_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export class ContestScheduler {
   private readonly contestRepository = new ContestRepository(getFirestoreClient());
+  private readonly submissionRepository = new SubmissionRepository(getFirestoreClient());
   private readonly votingGalleryService = new VotingGalleryService();
   private timer?: NodeJS.Timeout;
   private running = false;
@@ -92,11 +93,54 @@ export class ContestScheduler {
     );
 
     for (const contest of submissionDue) {
-      await this.handleTransition(contest, ContestStatus.VOTING, 'Submission deadline reached.');
+      // Check if there are any submissions before entering voting phase
+      const submissions = await this.submissionRepository.getByContestId(contest.id);
+
+      if (submissions.length === 0) {
+        // No submissions received - skip voting and end contest immediately
+        await this.handleNoSubmissionsTransition(contest);
+      } else {
+        await this.handleTransition(contest, ContestStatus.VOTING, 'Submission deadline reached.');
+      }
     }
 
     for (const contest of votingDue) {
       await this.handleTransition(contest, ContestStatus.RESULTS, 'Voting deadline reached.');
+    }
+  }
+
+  /**
+   * Handle contest that received no submissions.
+   * Skips voting phase and transitions directly to results.
+   */
+  private async handleNoSubmissionsTransition(contest: Contest): Promise<void> {
+    try {
+      const channel = await this.fetchContestChannel(contest.channelId);
+
+      if (!channel) {
+        await this.handleOrphanedContest(contest);
+        return;
+      }
+
+      // Transition directly to RESULTS, skipping VOTING
+      await transitionContest(contest, ContestStatus.RESULTS, {
+        actorId: SYSTEM_ACTOR_ID,
+        channel,
+        reason: 'No submissions received. Voting phase skipped.',
+        announcement:
+          '📭 **Contest Ended - No Submissions**\n\n' +
+          'The submission period has ended, but no photos were submitted.\n' +
+          'The contest has been closed without a voting phase.',
+      });
+
+      logger.info(
+        `ContestScheduler ended contest ${contest.id} (${contest.title}) with no submissions - voting phase skipped.`
+      );
+    } catch (error) {
+      logger.error(
+        `ContestScheduler failed to handle no-submissions transition for contest ${contest.id}.`,
+        error as Error
+      );
     }
   }
 

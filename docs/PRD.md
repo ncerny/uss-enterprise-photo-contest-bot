@@ -43,17 +43,18 @@ stateDiagram-v2
     [*] --> Created: Admin runs /contest create
     Created --> Submission: Bot creates channel
     Submission --> Submission: Users submit photos
-    Submission --> Voting: Submission deadline reached
+    Submission --> Voting: Submission deadline (with submissions)
+    Submission --> Results: Submission deadline (no submissions)
     Voting --> Voting: Users cast votes
     Voting --> Results: Voting deadline reached
     Results --> [*]: Winners announced
-    
+
     note right of Submission
         Photos stored privately
         Message deleted after capture
         User notified of receipt
     end note
-    
+
     note right of Voting
         Photos displayed anonymously
         Random order
@@ -190,6 +191,20 @@ sequenceDiagram
     end
     Bot->>Channel: Post voting instructions
 ```
+
+### Edge Case: No Submissions Received
+
+If no submissions are received by the submission deadline, the contest skips the voting phase entirely:
+
+1. **Scheduler detects deadline** with zero submissions
+2. **Contest transitions directly to Results** (skipping Voting)
+3. **Channel receives notification:**
+   > 📭 **Contest Ended - No Submissions**
+   >
+   > The submission period has ended, but no photos were submitted.
+   > The contest has been closed without a voting phase.
+
+This prevents an empty voting period and provides clear feedback to the community.
 
 ### Anonymous Display
 - Photos posted without usernames
