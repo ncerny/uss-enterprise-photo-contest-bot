@@ -129,12 +129,20 @@ export class VotingGalleryService {
     const displayPath = submission.assets.display.path;
     const file = this.bucket.file(displayPath);
 
-    const [url] = await file.getSignedUrl({
-      action: 'read',
-      expires: Date.now() + SIGNED_URL_EXPIRY_MS,
-    });
-
-    return url;
+    try {
+      const [url] = await file.getSignedUrl({
+        action: 'read',
+        expires: Date.now() + SIGNED_URL_EXPIRY_MS,
+      });
+      return url;
+    } catch (error) {
+      logger.error('Failed to generate signed URL', error as Error, {
+        path: displayPath,
+        bucket: this.bucket.name,
+      });
+      // Return a placeholder or throw to skip this submission
+      throw new Error(`Failed to get signed URL for ${displayPath}`);
+    }
   }
 
   /**

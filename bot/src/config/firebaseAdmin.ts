@@ -18,6 +18,7 @@ function ensureFirebaseApp(): void {
       clientEmail: env.FIREBASE_CLIENT_EMAIL,
       privateKey: env.FIREBASE_PRIVATE_KEY,
     }),
+    storageBucket: env.FIREBASE_STORAGE_BUCKET,
   });
 }
 
@@ -38,6 +39,7 @@ export function getStorageBucket(): Bucket {
   }
 
   ensureFirebaseApp();
-  storageBucket = getStorage().bucket(env.FIREBASE_STORAGE_BUCKET);
+  // Use default bucket configured in initializeApp
+  storageBucket = getStorage().bucket();
   return storageBucket;
 }
