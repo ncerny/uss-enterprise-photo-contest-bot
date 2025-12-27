@@ -1,0 +1,194 @@
+.page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  margin: 1rem 0 0;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statusDraft {
+  background: var(--color-surface-elevated);
+  color: var(--color-text-muted);
+}
+
+.statusSubmission {
+  background: #10b981;
+  color: white;
+}
+
+.statusVoting {
+  background: #6366f1;
+  color: white;
+}
+
+.statusResults {
+  background: #f59e0b;
+  color: white;
+}
+
+.statusCancelled {
+  background: #ef4444;
+  color: white;
+}
+
+.deadlineSection {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--color-surface-elevated);
+  border-radius: 12px;
+}
+
+.deadlineLabel {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.countdown {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.countdownUnit {
+  display: flex;
+  align-items: baseline;
+}
+
+.countdownValue {
+  color: var(--color-text-primary);
+}
+
+.countdownLabel {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-left: 0.125rem;
+}
+
+.expired {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.description {
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 600px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stat {
+  text-align: center;
+  padding: 1rem;
+  background: var(--color-surface-elevated);
+  border-radius: 8px;
+}
+
+.statValue {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.statLabel {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.25rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.actionButton,
+.actionButtonPrimary {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.actionButton {
+  background: var(--color-surface-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.actionButton:hover {
+  background: var(--color-surface-hover);
+}
+
+.actionButtonPrimary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.actionButtonPrimary:hover {
+  filter: brightness(1.1);
+}
+
+.deadlines {
+  border-top: 1px solid var(--color-border);
+  padding-top: 1.5rem;
+}
+
+.deadlineRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}

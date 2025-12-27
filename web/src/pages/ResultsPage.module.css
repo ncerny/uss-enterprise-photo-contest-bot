@@ -1,0 +1,195 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.backLink {
+  display: inline-block;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.backLink:hover {
+  color: var(--color-text-primary);
+}
+
+.title {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  margin: 0.25rem 0 0;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat {
+  text-align: center;
+  padding: 1rem;
+  background: var(--color-surface-elevated);
+  border-radius: 8px;
+}
+
+.statValue {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.statLabel {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.25rem;
+}
+
+.noWinners {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-text-muted);
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  margin: 0 0 1.5rem;
+}
+
+.winnersSection {
+  margin-bottom: 3rem;
+}
+
+.winnersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.winnerCard {
+  background: var(--color-surface-elevated);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.place1 {
+  box-shadow: 0 0 0 2px #ffd700;
+}
+
+.place2 {
+  box-shadow: 0 0 0 2px #c0c0c0;
+}
+
+.place3 {
+  box-shadow: 0 0 0 2px #cd7f32;
+}
+
+.placement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--color-surface-hover);
+}
+
+.placementEmoji {
+  font-size: 1.5rem;
+}
+
+.tiedBadge {
+  font-size: 0.75rem;
+  background: var(--color-primary);
+  color: white;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.winnerImageContainer {
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+
+.winnerImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.winnerInfo {
+  padding: 1rem;
+}
+
+.winnerCaption {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.winnerVotes {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.othersSection {
+  border-top: 1px solid var(--color-border);
+  padding-top: 2rem;
+}
+
+.othersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.otherCard {
+  background: var(--color-surface-elevated);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.otherImage {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.otherInfo {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+.otherPlacement {
+  color: var(--color-text-muted);
+}
+
+.otherVotes {
+  color: var(--color-text-secondary);
+}

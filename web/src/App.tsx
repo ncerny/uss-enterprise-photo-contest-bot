@@ -5,6 +5,9 @@ import LoginPage from './pages/LoginPage';
 import AuthCallback from './pages/AuthCallback';
 import MySubmissions from './pages/MySubmissions';
 import EditSubmission from './pages/EditSubmission';
+import ContestPage from './pages/ContestPage';
+import VotingPage from './pages/VotingPage';
+import ResultsPage from './pages/ResultsPage';
 import Layout from './components/Layout';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -49,6 +52,32 @@ function AppRoutes() {
               <EditSubmission />
             </Layout>
           </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/contest/:contestId"
+        element={
+          <Layout>
+            <ContestPage />
+          </Layout>
+        }
+      />
+      <Route
+        path="/contest/:contestId/vote"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <VotingPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/contest/:contestId/results"
+        element={
+          <Layout>
+            <ResultsPage />
+          </Layout>
         }
       />
       <Route path="*" element={<Navigate to="/" replace />} />
