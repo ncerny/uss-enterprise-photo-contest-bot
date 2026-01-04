@@ -46,6 +46,8 @@ export class SubmissionPersistenceService {
 
     const submission = await this.submissionRepository.create({
       contestId: result.contest.id,
+      guildId: result.contest.guildId,
+      channelId: result.contest.channelId,
       userId: result.userId,
       assets: result.variants,
       uploadId: result.uploadId,
