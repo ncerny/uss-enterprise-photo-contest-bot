@@ -87,6 +87,12 @@ export interface Submission {
   /** Contest this submission belongs to */
   contestId: string;
 
+  /** Discord guild (server) ID */
+  guildId: string;
+
+  /** Discord channel ID where submitted */
+  channelId: string;
+
   /** Discord user ID of submitter */
   userId: string;
 
