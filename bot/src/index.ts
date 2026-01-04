@@ -15,6 +15,8 @@ import { SubmissionFeedbackService } from './features/submissions/submissionFeed
 import { SubmissionLimitService } from './features/submissions/submissionLimitService';
 import { SubmissionWelcomeMessageService } from './features/submissions/submissionWelcomeMessageService';
 import { VotingReactionHandler, VoteFeedbackService } from './features/voting';
+import { SubmissionDeletionService } from './features/submissions/submissionDeletionService';
+import { SubmissionManagementHandler } from './features/submissions/submissionManagementHandler';
 
 const client = new Client({
   intents: [
@@ -52,6 +54,10 @@ const submissionWelcomeMessageService = new SubmissionWelcomeMessageService(
 const votingReactionHandler = new VotingReactionHandler(client);
 const voteFeedbackService = new VoteFeedbackService(client, votingReactionHandler);
 
+// Submission management services
+const submissionDeletionService = new SubmissionDeletionService(client);
+const submissionManagementHandler = new SubmissionManagementHandler(submissionDeletionService);
+
 // Wire up voting message registration
 contestScheduler.setVotingMessageRegistrar((messageId, submissionId, contestId) => {
   votingReactionHandler.registerVotingMessage(messageId, submissionId, contestId);
@@ -65,13 +71,37 @@ client.once('ready', () => {
 });
 
 client.on('interactionCreate', async (interaction) => {
-  if (interaction.isChatInputCommand()) {
-    await commandDispatcher.dispatch(interaction);
-    return;
-  }
+  try {
+    if (interaction.isChatInputCommand()) {
+      await commandDispatcher.dispatch(interaction);
+      return;
+    }
 
-  if (interaction.isModalSubmit()) {
-    await handleContestCreationModal(interaction);
+    if (interaction.isModalSubmit()) {
+      // Handle contest creation modal
+      if (interaction.customId === 'contest-creation-modal') {
+        await handleContestCreationModal(interaction);
+        return;
+      }
+      // Handle submission management modals
+      if (interaction.customId.startsWith('submission:')) {
+        await submissionManagementHandler.handleModal(interaction);
+        return;
+      }
+    }
+
+    if (interaction.isButton()) {
+      // Handle submission management buttons
+      if (interaction.customId.startsWith('submission:')) {
+        await submissionManagementHandler.handleButton(interaction);
+        return;
+      }
+    }
+  } catch (error) {
+    logger.error('Error handling interaction', error as Error, {
+      type: interaction.type,
+      customId: 'customId' in interaction ? interaction.customId : undefined,
+    });
   }
 });
 
