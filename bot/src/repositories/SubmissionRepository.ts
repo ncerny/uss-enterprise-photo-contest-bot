@@ -5,7 +5,7 @@ import {
   QueryDocumentSnapshot,
   Timestamp,
 } from 'firebase-admin/firestore';
-import { Submission, SubmissionData, Collections } from '@uss-enterprise/shared';
+import { Submission, SubmissionData, Collections, ContestStatus } from '@uss-enterprise/shared';
 
 /**
  * Repository for Submission operations
@@ -67,6 +67,56 @@ export class SubmissionRepository {
       .get();
 
     return snapshot.docs.map((doc) => this.deserializeSubmission(doc));
+  }
+
+  /**
+   * Get all submissions by a user in contests with given statuses
+   */
+  async getByUserInContestStatuses(
+    userId: string,
+    contestStatuses: ContestStatus[]
+  ): Promise<Submission[]> {
+    // First get contests in the target statuses
+    const contestsSnapshot = await this.firestore
+      .collection(Collections.CONTESTS)
+      .where('status', 'in', contestStatuses)
+      .get();
+
+    if (contestsSnapshot.empty) {
+      return [];
+    }
+
+    const contestIds = contestsSnapshot.docs.map((doc) => doc.id);
+
+    // Firestore 'in' queries limited to 30 items, batch if needed
+    const submissions: Submission[] = [];
+    const batches = [];
+    for (let i = 0; i < contestIds.length; i += 30) {
+      batches.push(contestIds.slice(i, i + 30));
+    }
+
+    for (const batch of batches) {
+      const snapshot = await this.collection
+        .where('userId', '==', userId)
+        .where('contestId', 'in', batch)
+        .orderBy('createdAt', 'desc')
+        .get();
+
+      submissions.push(...snapshot.docs.map((doc) => this.deserializeSubmission(doc)));
+    }
+
+    return submissions;
+  }
+
+  /**
+   * Update submission caption
+   */
+  async updateCaption(id: string, caption: string): Promise<void> {
+    await this.collection.doc(id).update({
+      caption,
+      editedAt: new Date(),
+      updatedAt: new Date(),
+    });
   }
 
   /**
